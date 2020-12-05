@@ -19,7 +19,13 @@ mongoose
 
 //since mongoose promise is depreciated, we overide it with node's promise
 mongoose.Promise = global.Promise;
-
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, authorization');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+  });
 app.use("/api", routes);
 
 app.listen(port, () => {
