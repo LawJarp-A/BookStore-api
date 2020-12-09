@@ -25,6 +25,16 @@ router.get("/users", [authenticateJWT], (req, res) => {
   });
 });
 
+router.put("/ratings", [authenticateJWT], (req, res) => {
+  User.findByIdAndUpdate(
+    req.user.id,
+    { $set: { rating: req.body.rating } },
+    { new: true }
+  ).then(res.send('Done')).catch((err) => {
+    res.send(err);
+  });
+});
+
 router.post("/offers", [authenticateJWT], (req,res) =>{
   console.log(req.data)
   const offer = new Offer({
@@ -57,7 +67,7 @@ router.get("/offers", [authenticateJWT], (req, res) => {
 });
 
 router.get("/products", (req, res) => {
-  Product.find(function (err, products) {
+  Product.find({},function (err, products) {
     if (err) return console.error(err);
     res.send(products);
   });
