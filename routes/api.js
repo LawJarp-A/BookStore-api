@@ -101,19 +101,25 @@ router.get("/reviews", (req,res) => {
 });
 
 router.post('/reviews', (req, res) => {
-  const rev = new Review({
-    product_name: req.body.product_name,
-    author_name: req.body.author_name,
-    date_of_review: req.body.date_of_review,
-    reviewer_id: req.body.reviewer_id,
-    comment: req.body.comment,
-  });
-  rev.save((err, review) => {
-    if(err) {
-    res.status(500).send({message: err});
-    } else {
+  Review.find({product_id: req.body.product_id}, function(err,review){
+    if (err) return console.error(err);
+
+    const rev = new Review({
+      product_id: req.body.product_id,
+      product_name: req.body.product_name,
+      reviewer_email: req.body.buyer_email,
+      comment: req.body.comment,
+    });
+
+    rev.save((err, review) => {
+      if(err) {
+      res.status(500).send({message: err});
+      } else {
       res.status(200).send({message: review});
-    }
+      } 
+    });
+
   });
+
 });
 module.exports = router;
