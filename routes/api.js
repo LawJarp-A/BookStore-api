@@ -7,7 +7,8 @@ const uuid = require("uuid");
 
 const Product = require("../models/Products");
 const User = require('../models/User');
-const Offer = require('../models/Offers')
+const Offer = require('../models/Offers');
+const Review = require('../models/Review');
 
 
 router.post("/register", controller.register);
@@ -57,7 +58,7 @@ router.get("/offers", [authenticateJWT], (req, res) => {
 });
 
 router.get("/products", (req, res) => {
-  Product.find(function (err, products) {
+  Product.find({}, function(err, products) {
     if (err) return console.error(err);
     res.send(products);
   });
@@ -92,4 +93,27 @@ router.get("/", (req, res) => {
   res.send("Hello");
 });
 
+router.get("/reviews", (req,res) => {
+  Review.find({}, (err, reviews) => {
+    if (err)return  console.error(err);
+    res.send(reviews);
+  });
+});
+
+router.post('/reviews', (req, res) => {
+  const rev = new Review({
+    product_name: req.body.product_name,
+    author_name: req.body.author_name,
+    date_of_review: req.body.date_of_review,
+    reviewer_id: req.body.reviewer_id,
+    comment: req.body.comment,
+  });
+  rev.save((err, review) => {
+    if(err) {
+    res.status(500).send({message: err});
+    } else {
+      res.status(200).send({message: review});
+    }
+  });
+});
 module.exports = router;
