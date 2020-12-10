@@ -8,6 +8,7 @@ const uuid = require("uuid");
 const Product = require("../models/Products");
 const User = require('../models/User');
 const Offer = require('../models/Offers')
+const Review = require('../models/Review');
 
 
 router.post("/register", controller.register);
@@ -67,14 +68,14 @@ router.get("/offers", [authenticateJWT], (req, res) => {
 });
 
 router.get("/products", (req, res) => {
-  Product.find({},function (err, products) {
+  Product.find({}, function (err, products) {
     if (err) return console.error(err);
     res.send(products);
   });
 });
 
 router.post("/products", [authenticateJWT], (req, res) => {
-  User.findById(req.user.id,function (err, user) {
+  User.findById(req.user.id, function (err, user) {
     if (err) return console.error(err);
     const product = new Product({
       product_name: req.body.product_name,
@@ -86,14 +87,13 @@ router.post("/products", [authenticateJWT], (req, res) => {
     });
     product.save((err, product) => {
       if (err) {
-        res.status(500).send({ message: err });
+        res.status(500).send({ err });
         return;
       } else {
         res.status(200).send({ product });
       }
     });
   });
-  
 });
 
 router.delete("/products", (res, req) => {});
@@ -102,4 +102,34 @@ router.get("/", (req, res) => {
   res.send("Hello");
 });
 
+
+router.get("/reviews", (req,res) => {
+  Review.find({product_id: req.query.product_id}, (err, reviews) => {
+    if (err)return  console.error(err);
+    res.send(reviews);
+  });
+});
+
+router.post('/reviews', (req, res) => {
+  Review.find({product_id: req.body.product_id}, function(err,review){
+    if (err) return console.error(err);
+
+    const rev = new Review({
+      product_id: req.body.product_id,
+      product_name: req.body.product_name,
+      reviewer_email: req.body.reviewer_email,
+      comment: req.body.comment,
+    });
+
+    rev.save((err, review) => {
+      if(err) {
+      res.status(500).send({message: err});
+      } else {
+      res.status(200).send({message: review});
+      } 
+    });
+
+  });
+
+});
 module.exports = router;
